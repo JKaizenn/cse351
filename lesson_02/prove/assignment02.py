@@ -1,7 +1,7 @@
 """
 Course    : CSE 351
 Assignment: 02
-Student   : <your name here>
+Student   : <Jessen Forbush>
 
 Instructions:
     - review instructions in the course
@@ -41,20 +41,55 @@ def main():
 # ===========================================================================
 class ATM_Reader():
     # TODO - implement this class here
-    ...
+    def __init__(self):
+        pass
+    
+    def run():
+        pass
 
 
 # ===========================================================================
 class Account():
     # TODO - implement this class here
-    ...
-
+    def __init__(self):
+        self.balance = Money('')
+    
+    def deposit(self, amount):
+        pass
+    
+    def withdraw(self, amount):
+        pass
+    
+    def get_balance():
+        pass 
 
 # ===========================================================================
 class Bank():
     # TODO - implement this class here
-    ...
-
+    def __init__(self):
+        self.accounts = {}
+        
+    def deposit(self, account, amount):
+        # Add amount to the specified account
+        if account in self.accounts:
+            self.accounts[account] += amount
+        else:
+            # Amount remains the same if deposit is not completed or is 0.
+            self.accounts[account] = amount
+    
+    def withdraw(self, account, amount):
+        if account in self.accounts and self.accounts[account] >= amount:
+            return True
+            print("Withdrawl Successful!")
+        else:
+            return False # Insufficient funds or account does not exist
+            print("Account does not exist or funds are not present.")
+    
+    def get_balance(self, account):
+        # Return the balance of the specified amount
+        if account in self.accounts:
+            return self.accounts[account]
+        return 0 # Return 0 if account does not exist
 
 # ---------------------------------------------------------------------------
 

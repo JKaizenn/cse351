@@ -41,17 +41,40 @@ from cse351 import *
 
 # global
 call_count = 0
+threads = []
+
+class GetUrl(threading.Thread):
+    
+    def __init__(self, url):
+        threading.Thread.__init__(self)
+        self.url = url
+        self.name = ''
+        
+    def get_name(self):
+        return self.name
+        
+    def run(self):
+        item = get_data_from_server(self.url)
+        self.name = item['name']
+        
 
 def get_urls(film6, kind):
     global call_count
 
-    urls = film6[kind]
-    print(kind)
-    for url in urls:
+    threads = []
+    for url in film6[kind]:
+        t = GetUrl(url)
         call_count += 1
-        item = get_data_from_server(url)
-        print(f'  - {item['name']}')
+        t.start()
+        threads.append(t)
+    
+    for t in threads:
+        t.join()
 
+    print(kind)
+    for t in threads:
+        print(f'  - {t.get_name()}')
+    
 def main():
     global call_count
 
@@ -68,9 +91,10 @@ def main():
     get_urls(film6, 'starships')
     get_urls(film6, 'vehicles')
     get_urls(film6, 'species')
-
+    
     log.stop_timer('Total Time To complete')
     log.write(f'There were {call_count} calls to the server')
+    
 
 if __name__ == "__main__":
     main()
