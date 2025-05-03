@@ -31,7 +31,16 @@ def main():
 
     bank = Bank()
 
-    # TODO - Add a ATM_Reader for each data file
+    # Handle ATM threads and data files
+    atm_threads = []
+    for data_file in data_files:
+        atm_reader = ATM_Reader(data_file, bank)
+        atm_threads.append(atm_reader)
+        atm_reader.start()
+        
+    # Wait for all threads to complete
+    for thread in atm_threads:
+        thread.join()
 
     test_balances(bank)
 
@@ -39,57 +48,77 @@ def main():
 
 
 # ===========================================================================
-class ATM_Reader():
-    # TODO - implement this class here
-    def __init__(self):
-        pass
-    
-    def run():
-        pass
-
+class ATM_Reader(threading.Thread):
+    def __init__(self, filename, bank):
+        threading.Thread.__init__(self)
+        self.filename = filename
+        self.bank = bank
+        
+    def run(self):
+        with open(self.filename, 'r') as file:
+            for line in file:
+                #Skip the comment lines
+                if line.startswith('#'):
+                    continue
+                
+                #Process transaction
+                parts = line.strip().split(',')
+                if len(parts) == 3:
+                    account_number = int(parts[0])
+                    transaction_type = parts[1]
+                    amount = Money(parts[2])
+                    
+                    if transaction_type == 'd':
+                        self.bank.deposit(account_number, amount)
+                    elif transaction_type == 'w':
+                        self.bank.withdraw(account_number, amount)                   
 
 # ===========================================================================
 class Account():
-    # TODO - implement this class here
     def __init__(self):
-        self.balance = Money('')
+        self.balance = Money('0.00')
     
     def deposit(self, amount):
-        pass
+        self.balance.add(amount)
     
     def withdraw(self, amount):
-        pass
+        self.balance.sub(amount)
     
-    def get_balance():
-        pass 
+    def get_balance(self):
+        return self.balance
 
 # ===========================================================================
 class Bank():
-    # TODO - implement this class here
     def __init__(self):
         self.accounts = {}
+        self.lock = threading.Lock() # Add a lock for thread syncronization
         
     def deposit(self, account, amount):
-        # Add amount to the specified account
-        if account in self.accounts:
-            self.accounts[account] += amount
-        else:
-            # Amount remains the same if deposit is not completed or is 0.
-            self.accounts[account] = amount
+        with self.lock:
+            # Create account if it doesn't exist
+            if account not in self.accounts:
+                self.accounts[account] = Account()
+            
+            # Add amount to the specified account
+            self.accounts[account].deposit(amount)
     
     def withdraw(self, account, amount):
-        if account in self.accounts and self.accounts[account] >= amount:
-            return True
-            print("Withdrawl Successful!")
-        else:
-            return False # Insufficient funds or account does not exist
-            print("Account does not exist or funds are not present.")
-    
+        # Create account if it doesn't exist
+        with self.lock:
+            if account not in self.accounts:
+                self.accounts[account] = Account()
+            
+            # Withdraw amount to the specified account
+            self.accounts[account].withdraw(amount)
+        
     def get_balance(self, account):
-        # Return the balance of the specified amount
-        if account in self.accounts:
-            return self.accounts[account]
-        return 0 # Return 0 if account does not exist
+        # Return the balance of the specified account
+        with self.lock: 
+            if account in self.accounts:
+                return self.accounts[account].get_balance()
+        
+            # Return 0.00 if the account doesn't exist
+            return Money(0.00) 
 
 # ---------------------------------------------------------------------------
 
