@@ -30,7 +30,8 @@ RECORDS_TO_RETRIEVE = 5000  # Don't change
 # ---------------------------------------------------------------------------
 def retrieve_weather_data():
     # TODO - fill out this thread function (and arguments)
-    ...
+    def __init__(self):
+        pass
 
 
 # ---------------------------------------------------------------------------
