@@ -1,7 +1,7 @@
 """
 Course    : CSE 351
 Assignment: 04
-Student   : <your name here>
+Student   : <Jessen Forbush>
 
 Instructions:
     - review instructions in the course
